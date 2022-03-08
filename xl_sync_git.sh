@@ -13,12 +13,15 @@ do
   if [ -d "$i/.git" ]; then
     REPO_FOUND=true
     cd $i
-    echo "Attempting to sync $i"
+    REMOTE_NAME=`git remote`
+    DEFAULT_BRANCH=`git remote show ${REMOTE_NAME} | sed -n '/HEAD branch/s/.*: //p'`
     CURRENT_BRANCH=`git branch --show-current`
-    if [ "master" == "$CURRENT_BRANCH" ]; then
+    if [ "$DEFAULT_BRANCH" == "$CURRENT_BRANCH" ]; then
+      echo "Attempting to sync pull $i"
       git pull
     else
-      git fetch origin master:master
+      echo "Attempting to sync fetch $i"
+      git fetch $REMOTE_NAME $DEFAULT_BRANCH
     fi
     cd ..
   fi
