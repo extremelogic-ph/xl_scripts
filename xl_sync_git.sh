@@ -1,7 +1,7 @@
 #!/bin/bash
 #    File Name: xl_sync_git.sh
 #      Created: 20201104
-#      Purpose: Try to sync all repo
+#      Purpose: Try to sync all repo default branches. Usually its main or master.
 #  Main Author: Extreme Logic PH
 
 CWD=`pwd`
@@ -21,6 +21,7 @@ do
       if [ -z "$DEFAULT_BRANCH" ]
       then
         echo "Unable to fetch ${PROJECT_DIR}. Cannot determine default branch"
+        # too lazy to test, maybe we could try main or master and just handle the error
       else
         echo "Attempting to sync fetch ${PROJECT_DIR}"
         git fetch $REMOTE_NAME $DEFAULT_BRANCH:$DEFAULT_BRANCH
