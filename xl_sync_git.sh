@@ -4,27 +4,28 @@
 #      Purpose: Try to sync all repo
 #  Main Author: Extreme Logic PH
 
-shopt -s nullglob
-array=(*/)
-shopt -u nullglob
+CWD=`pwd`
 
-for i in "${array[@]}"
+for d in `find $CWD -name ".git" -type d -maxdepth 2`;
 do
-  if [ -d "$i/.git" ]; then
     REPO_FOUND=true
-    cd $i
+    cd $d/..
+    PROJECT_DIR=`pwd`
     REMOTE_NAME=`git remote`
     DEFAULT_BRANCH=`git remote show ${REMOTE_NAME} | sed -n '/HEAD branch/s/.*: //p'`
     CURRENT_BRANCH=`git branch --show-current`
     if [ "$DEFAULT_BRANCH" == "$CURRENT_BRANCH" ]; then
-      echo "Attempting to sync pull $i"
+      echo "Attempting to sync pull ${PROJECT_DIR}"
       git pull
     else
-      echo "Attempting to sync fetch $i"
-      git fetch $REMOTE_NAME $DEFAULT_BRANCH
+      if [ -z "$DEFAULT_BRANCH" ]
+      then
+        echo "Unable to fetch ${PROJECT_DIR}. Cannot determine default branch"
+      else
+        echo "Attempting to sync fetch ${PROJECT_DIR}"
+        git fetch $REMOTE_NAME $DEFAULT_BRANCH:$DEFAULT_BRANCH
+      fi
     fi
-    cd ..
-  fi
 done
 
 if [ "true" != "$REPO_FOUND" ]; then
