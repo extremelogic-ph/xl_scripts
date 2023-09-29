@@ -6,7 +6,7 @@ A collection of simple, need-based scripts by Extreme Logic Ph.
 - **Purpose:** Updates all local git repos in the main project directory.
 - **Usage:** Execute `./xl_sync_git.sh` within the `main_project_directory`.
 
-```
+```bash
 cd main_project_directory
 ./xl_sync_git.sh
 ```
@@ -14,13 +14,13 @@ cd main_project_directory
 - **Directory Structure:**
 
 ```
-    main_project_directory
-        project1
-            .git
-            README.txt
-        project2
-            .git
-            hello.java
+main_project_directory
+    project1
+        .git
+        README.txt
+    project2
+        .git
+        hello.java
 ```
 
 ## 2. xl_goto.sh
@@ -40,11 +40,11 @@ cd main_project_directory
 
 ### Sample Execution
 
-```sh
+```
 . xl_goto.sh 1
 ```
 
-    Changes the current directory to the one corresponding to choice `1` in the configuration file.
+Changes the current directory to the one corresponding to choice `1` in the configuration file.
 
 ## 3. xl_wait_port.sh
 - **Created:** 20150801
@@ -55,7 +55,7 @@ cd main_project_directory
     - Displays a warning message if the process takes some time.
 ### Sample Execution
 
-```sh
+```
 ./xl_wait_port.sh 12004 up
 ```
 
@@ -72,7 +72,7 @@ Waits for port 12004 to go up and prints a message when the port is up.
     - Supports backing up multiple files and folders specified as separate arguments.
 ### Sample Execution
 
-```sh
+```
 ./xl_backup.sh /path/to/file /path/to/folder
 ```
 
