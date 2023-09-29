@@ -5,12 +5,15 @@ A collection of simple, need-based scripts by Extreme Logic Ph.
 ## 1. xl_sync_git.sh
 - **Purpose:** Updates all local git repos in the main project directory.
 - **Usage:** Execute `./xl_sync_git.sh` within the `main_project_directory`.
-    ```
-    cd main_project_directory
-    ./xl_sync_git.sh
-    ```
+
+```
+cd main_project_directory
+./xl_sync_git.sh
+```
+
 - **Directory Structure:**
-    ```
+
+```
     main_project_directory
         project1
             .git
@@ -18,7 +21,7 @@ A collection of simple, need-based scripts by Extreme Logic Ph.
         project2
             .git
             hello.java
-    ```
+```
 
 ## 2. xl_goto.sh
 - **Created:** 20150610
@@ -29,14 +32,18 @@ A collection of simple, need-based scripts by Extreme Logic Ph.
     - Each line in `xl_goto.cfg`: `<number>,<description>,<directory path>`
     - Changes to the selected directory based on user input.
 ### Sample Configuration (xl_goto.cfg)
-    ```
-    1,Description for Directory 1,/path/to/directory1
-    2,Description for Directory 2,/path/to/directory2
-    ```
+
+```
+1,Description for Directory 1,/path/to/directory1
+2,Description for Directory 2,/path/to/directory2
+```
+
 ### Sample Execution
-    ```sh
-    . xl_goto.sh 1
-    ```
+
+```sh
+. xl_goto.sh 1
+```
+
     Changes the current directory to the one corresponding to choice `1` in the configuration file.
 
 ## 3. xl_wait_port.sh
@@ -47,10 +54,12 @@ A collection of simple, need-based scripts by Extreme Logic Ph.
     - Waits until the specified port is either up or down.
     - Displays a warning message if the process takes some time.
 ### Sample Execution
-    ```sh
-    ./xl_wait_port.sh 12004 up
-    ```
-    Waits for port 12004 to go up and prints a message when the port is up.
+
+```sh
+./xl_wait_port.sh 12004 up
+```
+
+Waits for port 12004 to go up and prints a message when the port is up.
 
 ## 4. xl_backup.sh
 - **Created:** 20150213
@@ -62,10 +71,12 @@ A collection of simple, need-based scripts by Extreme Logic Ph.
     - Archives the backup into a `.tar.gz` file.
     - Supports backing up multiple files and folders specified as separate arguments.
 ### Sample Execution
-    ```sh
-    ./xl_backup.sh /path/to/file /path/to/folder
-    ```
-    Backs up and archives the specified file and folder into the backup directory.
+
+```sh
+./xl_backup.sh /path/to/file /path/to/folder
+```
+
+Backs up and archives the specified file and folder into the backup directory.
 
 ## Contact Information
 - **Email:** support@extremelogic.ph
