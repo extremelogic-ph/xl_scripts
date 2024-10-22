@@ -12,7 +12,7 @@ XL_SCRIPT_NAME=$(basename "$0")
 XL_INITIAL_DIR=$(pwd)
 
 # Function to check if the required number of parameters are provided
-require_params() {
+xl_require_params() {
     local param_count=$1
     local required_params=$2
     local sample_pattern=$3
@@ -30,19 +30,19 @@ require_params() {
 }
 
 # Function to check if a given string exists as a variable
-require_variable() {
+xl_require_variable() {
     local var_name="$1"
     local message="$2"
 
     # Check if the environment variable is set (non-empty)
     if [ -z "${!var_name}" ]; then
-        echo "Error: Environment variable '$var_name' is not set. $message"
+        echo "Error: variable '$var_name' is not set. $message"
         exit 1
     fi
 }
 
 # Function to check if a required file exists
-require_file() {
+xl_require_file() {
     local file_path="$1"
     local message="$2"
 
@@ -53,7 +53,7 @@ require_file() {
 }
 
 # Function to check if a required directory exists
-require_dir() {
+xl_require_dir() {
     local dir_path="$1"
     local message="$2"
 
