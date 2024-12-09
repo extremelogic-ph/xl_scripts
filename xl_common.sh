@@ -62,3 +62,18 @@ xl_require_dir() {
         exit 1
     fi
 }
+
+# Function to require that we work on the desired directory
+xl_require_cwd() {
+    local required_dir="$1"
+    
+    # Get the current directory name
+    local current_dir=$(basename "$PWD")
+    
+    # Check if the current directory matches the required directory
+    if [[ "$current_dir" != "$required_dir" ]]; then
+        echo "Error: You must run this script from the '$required_dir' directory."
+        exit 1
+    fi
+}
+
