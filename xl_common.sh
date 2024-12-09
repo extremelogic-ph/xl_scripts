@@ -21,9 +21,9 @@ xl_require_params() {
     # Check if the correct number of parameters are provided
     if [ "$param_count" -lt "$required_params" ]; then
         echo ""
-        echo "Usage: ${SCRIPT_NAME} ${sample_pattern}"
+        echo "Usage: ${XL_SCRIPT_NAME} ${sample_pattern}"
         echo ""
-        echo "Sample Usage: ${SCRIPT_NAME} ${sample_usage}"
+        echo "Sample Usage: ${XL_SCRIPT_NAME} ${sample_usage}"
         echo ""
         exit 1
     fi
