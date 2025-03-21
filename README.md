@@ -78,13 +78,11 @@ Waits for port 12004 to go up and prints a message when the port is up.
 
 Backs up and archives the specified file and folder into the backup directory.
 
-## 4. xl_gchat.sh
-- **Created:** 20150315
+## 5. xl_gchat.sh
+- **Created:** 20250315
 - **Author:** Extreme Logic
 - **Purpose:** Send google chat message via bash scripting
 - **Usage:** `./xl_backup.sh [--prompt <message> | --file <file>]`
-
-Sends a google chat message using a webhook. Need to setup XL_GCHAT_WEB_HOOK environment variable
 
 ### Sample Execution
 
@@ -92,6 +90,8 @@ Sends a google chat message using a webhook. Need to setup XL_GCHAT_WEB_HOOK env
 ./xl_gchat.sh --prompt "This is a meesage"
 ./xl_gchat.sh --file ./file_containing_the_message.txt
 ```
+
+Sends a google chat message using a webhook. Need to setup XL_GCHAT_WEB_HOOK environment variable
 
 ## Contact Information
 - **Email:** support@extremelogic.ph
