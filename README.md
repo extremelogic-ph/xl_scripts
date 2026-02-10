@@ -93,5 +93,17 @@ Backs up and archives the specified file and folder into the backup directory.
 
 Sends a google chat message using a webhook. Need to setup XL_GCHAT_WEB_HOOK environment variable
 
+## 6. xl_send_email.sh
+- **Created:** 20260210
+- **Author:** Virgilio So
+- **Purpose:** Sends a google email
+
+### Sample Execution
+
+```
+./xl_send_email.sh 
+./xl_send_email.sh --body ./body.txt
+```
+
 ## Contact Information
 - **Email:** support@extremelogic.ph
