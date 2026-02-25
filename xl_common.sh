@@ -87,3 +87,32 @@ xl_require_cwd() {
         exit 1
     fi
 }
+
+# Function to make sure that the files are the same
+xl_require_same_file() {
+    local file1="$1"
+    local file2="$2"
+
+    # Check if both parameters are provided
+    if [[ -z "$file1" || -z "$file2" ]]; then
+        echo "Error: Both file arguments must be provided."
+        exit 1
+    fi
+
+    # Check if both files exist and are regular files
+    if [[ ! -f "$file1" ]]; then
+        echo "Error: '$file1' is not a valid file or does not exist."
+        exit 1
+    fi
+
+    if [[ ! -f "$file2" ]]; then
+        echo "Error: '$file2' is not a valid file or does not exist."
+        exit 1
+    fi
+
+    # Compare the files
+    if ! cmp -s "$file1" "$file2"; then
+        echo "Error: '$file1' and '$file2' are not the same."
+        exit 1
+    fi
+}
