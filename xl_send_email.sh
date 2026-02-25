@@ -1,98 +1,87 @@
 #!/bin/bash
 #      File Name: xl_send_email.sh
 #        Created: 20260210
-#        Purpose: Sends a google email 
+#        Purpose: Fixes HTML rendering and Subject Overrides
 #    Main Author: Virgilio So
-#   Contributors:
 
-# Default email body file
-email_body_file=".xl_send_email_body"
+# 1. Initialize variables with Env Defaults
+# We use := to set a default only if the Env Var is not already set
+username="${XL_SEND_EMAIL_USER}"
+password="${XL_SEND_EMAIL_PASS}"
+recipient="${XL_SEND_EMAIL_RECIPIENT}"
+subject="${XL_SEND_EMAIL_SUBJECT}"
+cc_recipient="${XL_SEND_EMAIL_CC_RECIPIENT}"
+email_body_file="${XL_SEND_EMAIL_BODY:-.xl_send_email_body}"
+dry_run=false
 
-# Parse command line arguments
+# 2. Parse command line arguments for overrides
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --body)
-            email_body_file="$2"
-            shift 2
-            ;;
+        --body)             email_body_file="$2"; shift 2 ;;
+        --send_email_user)  username="$2";        shift 2 ;;
+        --send_email_pass)  password="$2";        shift 2 ;;
+        --recipient)        recipient="$2";       shift 2 ;;
+        --subject)          subject="$2";         shift 2 ;;
+        --cc)               cc_recipient="$2";    shift 2 ;;
+        --dry-run)          dry_run=true;         shift 1 ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: $0 [--body <file>]"
             exit 1
             ;;
     esac
 done
 
-if [ -z "$XL_SEND_EMAIL_USER" ]; then
-    echo "Error: XL_SEND_EMAIL_USER environment variable is not set. Eg. john.doe@gmail.com"
-    exit 1
-fi
-if [ -z "$XL_SEND_EMAIL_PASS" ]; then
-    echo "Error: XL_SEND_EMAIL_PASS environment variable is not set. Eg: johndoescretpass"
-    exit 1
-fi
-if [ -z "$XL_SEND_EMAIL_RECIPIENT" ]; then
-    echo "Error: XL_SEND_EMAIL_RECIPIENT environment variable is not set. Eg: jane.doe@gmail.com or jane.doe@gmail.com,bob@example.com"
-    exit 1
-fi
-if [ -z "$XL_SEND_EMAIL_SUBJECT" ]; then
-    echo "Error: XL_SEND_EMAIL_SUBJECT environment variable is not set. Eg: Monthly Report"
-    exit 1
-fi
+# 3. Dynamic Date Replacement (CRITICAL: Do this AFTER flag parsing)
+current_date=$(date +%Y%m%d)
+subject="${subject//YYYYMMDD/$current_date}"
 
-# Check if email body file exists
-if [ ! -f "$email_body_file" ]; then
-    echo "Error: Email body file '$email_body_file' not found"
-    exit 1
-fi
+# 4. Validation
+if [ -z "$username" ]; then echo "Error: User not set"; exit 1; fi
+if [ -z "$password" ]; then echo "Error: Password not set"; exit 1; fi
+if [ -z "$recipient" ]; then echo "Error: Recipient not set"; exit 1; fi
+if [ -z "$subject" ]; then echo "Error: Subject not set"; exit 1; fi
+if [ ! -f "$email_body_file" ]; then echo "Error: Body file '$email_body_file' not found"; exit 1; fi
 
-subject="${XL_SEND_EMAIL_SUBJECT}"
+# 5. Mask Password for Display
+masked_pass="${password:0:2}********${password: -2}"
+
+# 6. Prepare Content (Note the specific spacing for HTML compatibility)
 body=$(cat "$email_body_file")
-username="${XL_SEND_EMAIL_USER}" # Your full Gmail address
-password="${XL_SEND_EMAIL_PASS}" # Your Gmail App Password or regular password
-encoded_password=$password
-smtp_server="smtp.gmail.com"
-smtp_port="587" # Use 465 for SSL
 
-# Prepare the email content with optional CC
-if [ -n "$XL_SEND_EMAIL_CC_RECIPIENT" ]; then
-    email_content=$(cat <<EOF
-From: $username
-To: $XL_SEND_EMAIL_RECIPIENT
-Cc: $XL_SEND_EMAIL_CC_RECIPIENT
-Subject: $subject
-Content-Type: text/html
+# Constructing the raw email string with explicit CRLF (line breaks)
+# This ensures Gmail recognizes it as a valid HTML email.
+email_data=$(printf "From: %s\r\nTo: %s\r\n" "$username" "$recipient")
+if [ -n "$cc_recipient" ]; then
+    email_data+="$(printf "Cc: %s\r\n" "$cc_recipient")"
+fi
+email_data+="$(printf "Subject: %s\r\n" "$subject")"
+email_data+="$(printf "Content-Type: text/html; charset=\"UTF-8\"\r\n")"
+email_data+="$(printf "\r\n%s" "$body")"
 
-$body
-EOF
-)
-else
-    email_content=$(cat <<EOF
-From: $username
-To: $XL_SEND_EMAIL_RECIPIENT
-Subject: $subject
-Content-Type: text/html
+# 7. Summary Display
+echo "--------------------------------------------------"
+echo " SENDING EMAIL TO: $recipient"
+echo " SUBJECT:          $subject"
+echo "--------------------------------------------------"
 
-$body
-EOF
-)
+if [ "$dry_run" = true ]; then
+    echo -e "\n[DRY RUN] Raw Payload Check:"
+    echo "$email_data"
+    exit 0
 fi
 
-# Build mail-rcpt arguments
-mail_rcpt_args="--mail-rcpt $XL_SEND_EMAIL_RECIPIENT"
-
-# Add CC recipients if set
-if [ -n "$XL_SEND_EMAIL_CC_RECIPIENT" ]; then
-    IFS=',' read -ra CC_ARRAY <<< "$XL_SEND_EMAIL_CC_RECIPIENT"
-    for cc_email in "${CC_ARRAY[@]}"; do
-        mail_rcpt_args="$mail_rcpt_args --mail-rcpt $cc_email"
-    done
-fi
-
-# Send the email using curl
-eval curl --ssl-reqd \
-  --mail-from "$username" \
-  $mail_rcpt_args \
-  --url "smtp://$smtp_server:$smtp_port" \
+# 8. Execution
+# Using --url "smtps://" for port 465 or "smtp://" with --ssl-reqd for 587
+curl --silent --show-error --ssl-reqd \
+  --url "smtp://smtp.gmail.com:587" \
   --user "$username:$password" \
-  -T - <<< "$email_content"
+  --mail-from "$username" \
+  --mail-rcpt "$recipient" \
+  $( [ -n "$cc_recipient" ] && echo "--mail-rcpt $cc_recipient" ) \
+  --upload-file <(echo "$email_data")
+
+if [ $? -eq 0 ]; then
+    echo "SUCCESS: Email sent."
+else
+    echo "ERROR: Send failed."
+fi
